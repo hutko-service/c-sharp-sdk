@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
@@ -12,21 +13,29 @@ namespace HutkoSDK.Order
     {
         public TransactionListResponse Post(TransactionListRequest req)
         {
-            TransactionListResponse response;
-            req.merchant_id = Config.MerchantId;
-            req.signature = Signature.GetRequestSignature(RequiredParams.GetHashProperties(req));
-            // In this api only json allowed
-            Config.ContentType = "json";
-            try
+            if (req == null)
             {
-                response = Client.Invoke<TransactionListRequest, TransactionListResponse>(req, req.ActionUrl, false);
-            }
-            catch (ClientException c)
-            {
-                response = new TransactionListResponse {Error = c};
+                throw new ArgumentNullException(nameof(req));
             }
 
-            return response;
+            // In this api only json is allowed. Scope the override to this call so
+            // concurrent requests keep their own content type.
+            using (Config.UseRequestScope(contentTypeOverride: "json"))
+            {
+                TransactionListResponse response;
+                req.merchant_id = Config.MerchantId;
+                req.signature = Signature.GetRequestSignature(RequiredParams.GetHashProperties(req));
+                try
+                {
+                    response = Client.Invoke<TransactionListRequest, TransactionListResponse>(req, req.ActionUrl, false);
+                }
+                catch (ClientException c)
+                {
+                    response = new TransactionListResponse {Error = c};
+                }
+
+                return response;
+            }
         }
     }
     

@@ -11,6 +11,11 @@ namespace HutkoSDK.Payment
     {
         public ReportsResponse Post(ReportsRequest req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             ReportsResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;

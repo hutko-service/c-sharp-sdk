@@ -1,0 +1,62 @@
+# Publishes the HutkoSDK package to NuGet.org using Trusted Publishing (OIDC).
+# No API key is stored: NuGet/login exchanges GitHub's OIDC token for a
+# short-lived key. The trusted-publisher policy on NuGet.org requires this
+# file to be named build.yml, to run in the `production` environment, and to
+# live in the hutko-service/c-sharp-sdk repository.
+name: build
+
+on:
+  # Publish when a version tag is pushed. Tag-triggered runs use the workflow
+  # file at the tag, so this works from any branch (a release-triggered run would
+  # require build.yml to be on the default branch).
+  push:
+    tags:
+      - 'v*'
+  # Publish when you cut a GitHub Release (once build.yml is on the default branch).
+  release:
+    types: [published]
+  # Or trigger a publish manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    # Must match the Environment configured on the trusted publisher.
+    environment: production
+
+    permissions:
+      contents: read
+      id-token: write   # required for OIDC / trusted publishing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      # Build & pack only the SDK library project (netstandard2.0/2.1).
+      - name: Pack
+        run: >
+          dotnet pack HutkoSDK/HutkoSDK.csproj
+          --configuration Release
+          --output ${{ github.workspace }}/artifacts
+
+      # Exchange the GitHub OIDC token for a short-lived NuGet API key.
+      # `user` is the NuGet.org account that owns the trusted-publisher policy.
+      - name: NuGet login (trusted publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: hutkoSDK
+
+      - name: Push to NuGet.org
+        run: >
+          dotnet nuget push "${{ github.workspace }}/artifacts/*.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

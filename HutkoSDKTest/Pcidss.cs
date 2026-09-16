@@ -6,16 +6,17 @@ using HutkoSDK.Payment;
 namespace HutkoSDKTest
 {
     [TestClass]
+    [TestCategory("Integration")]
     public class Psidss
     {
-        public int MerchantId = 1700002;
-        public string SecretKey = "test";
+        public int MerchantId = Sandbox.MerchantId;
+        public string SecretKey = Sandbox.SecretKey;
         public string ContentType = "json";
-        public string Endpoint = "pay.hutko.org";
-        public string card_number = "4444555511116666";
-        public string card_number_3ds = "4444555566661111";
-        public string cvv2 = "111";
-        public string expiry_date = "0130";
+        public string Endpoint = Sandbox.ApiHost;
+        public string card_number = Sandbox.CardApproved;
+        public string card_number_3ds = Sandbox.Card3ds;
+        public string cvv2 = Sandbox.Cvv;
+        public string expiry_date = Sandbox.ExpiryDate;
 
         [TestMethod]
         public void PcidssStepOne()

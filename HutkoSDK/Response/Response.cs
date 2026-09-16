@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
@@ -24,6 +25,11 @@ namespace HutkoSDK.Response
         /// <returns></returns>
         public ResponseModel GetResponse(string response, string type = null, bool isCredit = false)
         {
+            if (string.IsNullOrEmpty(response))
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
             ResponseModel data = RequiredParams.ConvertResponseByContentType<ResponseModel>(response, false, type);
             bool v2 = ISv2Resp(data);
             try
@@ -144,7 +150,9 @@ namespace HutkoSDK.Response
                 .Where(key => key != "signature" &&
                               key != "response_signature_string" &&
                               parsed[key].ToString() != "")
-                .OrderBy(key => key)
+                // Must match the request-side ordinal ordering so response/callback
+                // signature verification agrees with the gateway.
+                .OrderBy(key => key, StringComparer.Ordinal)
                 .ToList()
                 .Select(key => parsed[key]);
             return hashKeys;

@@ -104,7 +104,7 @@ namespace HutkoSDK.Models
         public string product_id { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "merchant_data")]
-        public dynamic merchant_data { get; set; }
+        public object merchant_data { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "rectoken")]
         public string rectoken { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
 
@@ -8,6 +9,11 @@ namespace HutkoSDK.Payment
     {
         public RectokenResponse Post(RectokenRequest req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             RectokenResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;

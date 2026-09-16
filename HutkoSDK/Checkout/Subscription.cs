@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using HutkoSDK.Models;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
@@ -12,32 +13,36 @@ namespace HutkoSDK.Checkout
     {
         public SubscriptionResponse Post(SubscriptionRequest req)
         {
-            SubscriptionResponse response;
-            string defaultProtocol = Config.Protocol;
-            string defaultContentType = Config.ContentType;
-            Config.ContentType = "json";
-            Config.Protocol = "2.0";
-            req.merchant_id = Config.MerchantId;
-            req.version = Config.Protocol;
-            req.subscription = "Y";
-            req.signature = Signature.GetRequestSignature(RequiredParams.GetHashProperties(req));
-            try
+            if (req == null)
             {
-                response = Client.Invoke<SubscriptionRequest, SubscriptionResponse>(req, req.ActionUrl);
-            }
-            catch (ClientException c)
-            {
-                response = new SubscriptionResponse {Error = c};
+                throw new ArgumentNullException(nameof(req));
             }
 
-            if (response.data != null && Config.Protocol == "2.0")
+            // Subscription is a protocol 2.0 / json-only operation. Scope the overrides
+            // to this call so concurrent requests are unaffected.
+            using (Config.UseRequestScope(protocolOverride: "2.0", contentTypeOverride: "json"))
             {
-                Config.Protocol = defaultProtocol;
-                Config.ContentType = defaultContentType;
-                return JsonFormatter.ConvertFromJson<SubscriptionResponse>(response.data, true, "order");
-            }
+                SubscriptionResponse response;
+                req.merchant_id = Config.MerchantId;
+                req.version = Config.Protocol;
+                req.subscription = "Y";
+                req.signature = Signature.GetRequestSignature(RequiredParams.GetHashProperties(req));
+                try
+                {
+                    response = Client.Invoke<SubscriptionRequest, SubscriptionResponse>(req, req.ActionUrl);
+                }
+                catch (ClientException c)
+                {
+                    return new SubscriptionResponse {Error = c};
+                }
 
-            return response;
+                if (response.data != null)
+                {
+                    return JsonFormatter.ConvertFromJson<SubscriptionResponse>(response.data, true, "order");
+                }
+
+                return response;
+            }
         }
     }
 

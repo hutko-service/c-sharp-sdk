@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
 
@@ -11,6 +12,11 @@ namespace HutkoSDK.Checkout
     {
         public TokenResponse Post(TokenRequest req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             TokenResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;

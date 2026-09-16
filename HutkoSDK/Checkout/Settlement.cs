@@ -1,4 +1,5 @@
-﻿using HutkoSDK.Utils;
+﻿using System;
+using HutkoSDK.Utils;
 using Newtonsoft.Json;
 
 namespace HutkoSDK.Checkout
@@ -10,30 +11,34 @@ namespace HutkoSDK.Checkout
     {
         public SettlementResponse Post(SettlementRequest req)
         {
-            SettlementResponse response;
-            string defaultProtocol = Config.Protocol;
-            string defaultContentType = Config.ContentType;
-            Config.ContentType = "json";
-            Config.Protocol = "2.0";
-            req.merchant_id = Config.MerchantId;
-            req.order_type = "settlement";
-            try
+            if (req == null)
             {
-                response = Client.Invoke<SettlementRequest, SettlementResponse>(req, req.ActionUrl);
-            }
-            catch (ClientException c)
-            {
-                response = new SettlementResponse {Error = c};
+                throw new ArgumentNullException(nameof(req));
             }
 
-            if (response.data != null && Config.Protocol == "2.0")
+            // Settlement is a protocol 2.0 / json-only operation. Scope the overrides
+            // to this call so concurrent requests are unaffected.
+            using (Config.UseRequestScope(protocolOverride: "2.0", contentTypeOverride: "json"))
             {
-                Config.Protocol = defaultProtocol;
-                Config.ContentType = defaultContentType;
-                return JsonFormatter.ConvertFromJson<SettlementResponse>(response.data, true, "order");
-            }
+                SettlementResponse response;
+                req.merchant_id = Config.MerchantId;
+                req.order_type = "settlement";
+                try
+                {
+                    response = Client.Invoke<SettlementRequest, SettlementResponse>(req, req.ActionUrl);
+                }
+                catch (ClientException c)
+                {
+                    return new SettlementResponse {Error = c};
+                }
 
-            return response;
+                if (response.data != null)
+                {
+                    return JsonFormatter.ConvertFromJson<SettlementResponse>(response.data, true, "order");
+                }
+
+                return response;
+            }
         }
     }
 

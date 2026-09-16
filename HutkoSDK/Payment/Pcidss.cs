@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
 
@@ -16,6 +17,11 @@ namespace HutkoSDK.Payment
         /// <returns></returns>
         public PcidssResponse StepOne(StepOneRequest req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             PcidssResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;
@@ -44,6 +50,11 @@ namespace HutkoSDK.Payment
         /// <returns></returns>
         public PcidssResponse StepTwo(StepTwoRequest req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             PcidssResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;

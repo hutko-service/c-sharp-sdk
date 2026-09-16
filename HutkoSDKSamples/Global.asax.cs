@@ -8,12 +8,15 @@ namespace HutkoSDKSamples
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            System.Net.ServicePointManager.SecurityProtocol =
-                System.Net.SecurityProtocolType.Tls | System.Net.SecurityProtocolType.Tls11 |
-                System.Net.SecurityProtocolType.Tls12;
+            // Enforce a modern TLS floor. TLS 1.0/1.1 are deprecated (POODLE/BEAST)
+            // and must not be enabled.
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
             Config.MerchantId = Int32.Parse(ConfigurationManager.AppSettings["merchantID"]);
-            Config.SecretKey = ConfigurationManager.AppSettings["secretKey"];
+            // Prefer a secret from the environment; fall back to Web.config, which
+            // holds only the public sandbox key for local demos.
+            Config.SecretKey = Environment.GetEnvironmentVariable("HUTKO_SECRET_KEY")
+                               ?? ConfigurationManager.AppSettings["secretKey"];
             Config.ContentType = ConfigurationManager.AppSettings["contentType"];
             Config.Protocol = ConfigurationManager.AppSettings["protocol"];
             Config.ApiHost = ConfigurationManager.AppSettings["ApiHost"];

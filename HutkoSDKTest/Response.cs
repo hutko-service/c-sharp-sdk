@@ -7,9 +7,9 @@ namespace HutkoSDKTest
     [TestClass]
     public class ResponseTest
     {
-        public int MerchantId = 1700002;
-        public string SecretKey = "test";
-        public string Endpoint = "pay.hutko.org";
+        public int MerchantId = Sandbox.MerchantId;
+        public string SecretKey = Sandbox.SecretKey;
+        public string Endpoint = Sandbox.ApiHost;
 
         [TestMethod]
         public void ResponseXml()

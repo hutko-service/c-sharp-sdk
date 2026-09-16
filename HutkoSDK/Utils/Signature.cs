@@ -36,21 +36,29 @@ namespace HutkoSDK.Utils
         }
 
         /// <summary>
-        /// Generate Sha1
+        /// Generate Sha1. SHA-1 is required by the Hutko signature specification
+        /// (the gateway validates SHA-1); it must not be swapped for another algorithm.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         private static string GetSha1(string value)
         {
             var data = Encoding.UTF8.GetBytes(value);
-            var hashData = new SHA1Managed().ComputeHash(data);
-            var hash = string.Empty;
-            foreach (var b in hashData)
+            using (var sha1 = SHA1.Create())
             {
-                hash += b.ToString("X2");
-            }
+                var hashData = sha1.ComputeHash(data);
+#if NET5_0_OR_GREATER
+                return Convert.ToHexString(hashData).ToLowerInvariant();
+#else
+                var hash = new StringBuilder(hashData.Length * 2);
+                foreach (var b in hashData)
+                {
+                    hash.Append(b.ToString("x2"));
+                }
 
-            return hash.ToLower();
+                return hash.ToString();
+#endif
+            }
         }
         /// <summary>
         /// Encode base64 String

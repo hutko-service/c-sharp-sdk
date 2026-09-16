@@ -1,0 +1,39 @@
+# Continuous integration: builds the library across all target frameworks and
+# runs the offline tests. Live-sandbox tests ([TestCategory("Integration")]) are
+# excluded by default; trigger them manually with the "run_integration" input.
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Also run live-sandbox integration tests"
+        type: boolean
+        default: false
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      # Compiles netstandard2.0, netstandard2.1, net8.0 and net10.0 in one go.
+      - name: Build library (all target frameworks)
+        run: dotnet build HutkoSDK/HutkoSDK.csproj -c Release
+
+      - name: Run offline tests
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.run_integration) }}
+        run: dotnet test HutkoSDKTest/HutkoSDKTest.csproj -c Release --filter "TestCategory!=Integration"
+
+      - name: Run all tests (incl. live sandbox)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_integration }}
+        run: dotnet test HutkoSDKTest/HutkoSDKTest.csproj -c Release

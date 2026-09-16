@@ -14,7 +14,7 @@ namespace HutkoSDK.Models
     public class ReceiverModel
     {
         [JsonProperty(PropertyName = "requisites")]
-        public dynamic requisites { get; set; }
+        public object requisites { get; set; }
 
         [JsonProperty(PropertyName = "type")] public string type { get; set; }
     }

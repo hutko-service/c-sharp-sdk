@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using HutkoSDK.Utils;
 using Newtonsoft.Json;
 
@@ -16,6 +17,11 @@ namespace HutkoSDK.Order
         /// <returns></returns>
         public ReverseByOrderResponse ByOrderID(ReverseByOrder req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             ReverseByOrderResponse response;
             req.merchant_id = Config.MerchantId;
             req.version = Config.Protocol;
@@ -43,6 +49,11 @@ namespace HutkoSDK.Order
         /// <returns></returns>
         public ReverseByPaymentResponse ByPaymentID(ReverseByPayment req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             ReverseByPaymentResponse response;
             req.merchant_id = Config.MerchantId;
             req.signature = Signature.GetRequestSignature(RequiredParams.GetHashProperties(req));
@@ -69,6 +80,11 @@ namespace HutkoSDK.Order
         /// <returns></returns>
         public ReverseByTransactionId ByTransactionID(ReverseByTransaction req)
         {
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
+
             ReverseByTransactionId response;
             try
             {

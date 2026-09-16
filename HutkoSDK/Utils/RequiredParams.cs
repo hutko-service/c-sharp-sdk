@@ -101,7 +101,10 @@ namespace HutkoSDK.Utils
                             o.GetValue(postObj) != null &&
                             o.GetValue(postObj).ToString() != ""
                 )
-                .OrderBy(o => o.Name)
+                // Ordinal ordering is required by the signature spec (08_Підпис запиту):
+                // keys are sorted by byte value, not culture rules, so snake_case keys
+                // containing '_' hash consistently with the gateway.
+                .OrderBy(o => o.Name, StringComparer.Ordinal)
                 .ToList()
                 .Select(o =>
                     o.GetGetMethod().Invoke(postObj, null).GetType() != typeof(string) &&

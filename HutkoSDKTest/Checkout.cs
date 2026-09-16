@@ -6,12 +6,13 @@ using HutkoSDK.Checkout;
 namespace HutkoSDKTest
 {
     [TestClass]
+    [TestCategory("Integration")]
     public class Checkout
     {
-        public int MerchantId = 1700002;
-        public string SecretKey = "test";
+        public int MerchantId = Sandbox.MerchantId;
+        public string SecretKey = Sandbox.SecretKey;
         public string ContentType = "json";
-        public string Endpoint = "pay.hutko.org";
+        public string Endpoint = Sandbox.ApiHost;
 
         [TestMethod]
         public void TestCheckout()
