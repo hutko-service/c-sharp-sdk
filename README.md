@@ -1,9 +1,7 @@
 # Hutko C# SDK
 
-<p align="center">
-	<a href="https://www.nuget.org/packages/HutkoSDK/"><img src="https://img.shields.io/nuget/v/HutkoSDK.svg" alt="NuGet version" /></a>
-	<a href="https://www.nuget.org/packages/HutkoSDK/"><img src="https://img.shields.io/nuget/dt/HutkoSDK.svg" alt="NuGet downloads" /></a>
-</p>
+[![NuGet version](https://img.shields.io/nuget/v/HutkoSDK.svg)](https://www.nuget.org/packages/HutkoSDK/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/HutkoSDK.svg)](https://www.nuget.org/packages/HutkoSDK/)
 
 Official C# / .NET SDK for the [**Hutko**](https://hutko.org) payment gateway. It wraps the Hutko
 HTTP API — hosted checkout, direct card payments with 3-D Secure, refunds, captures, recurring
@@ -61,7 +59,7 @@ dotnet add package HutkoSDK
 Or add it to your project file:
 
 ```xml
-<PackageReference Include="HutkoSDK" Version="1.0.0" />
+<PackageReference Include="HutkoSDK" Version="1.0.1" />
 ```
 
 ## Configuration

@@ -4,6 +4,12 @@ All notable, merchant-facing changes to the **Hutko C# SDK** are documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and the project
 follows [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-09-17
+
+### Fixed
+- The package README now renders correctly on the NuGet package page (the badges
+  previously used raw HTML, which NuGet displayed as text). No functional or API changes.
+
 ## [1.0.0] - 2026-09-17
 
 Initial public release on [NuGet](https://www.nuget.org/packages/HutkoSDK/).
@@ -34,4 +40,5 @@ Initial public release on [NuGet](https://www.nuget.org/packages/HutkoSDK/).
 ### Security
 - All API calls use HTTPS with a **TLS 1.2+** minimum.
 
+[1.0.1]: https://www.nuget.org/packages/HutkoSDK/1.0.1
 [1.0.0]: https://www.nuget.org/packages/HutkoSDK/1.0.0
