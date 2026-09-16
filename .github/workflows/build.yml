@@ -52,7 +52,9 @@ jobs:
         id: login
         uses: NuGet/login@v1
         with:
-          user: hutkoSDK
+          # NuGet trusted-publishing policies are owned by the individual account
+          # that created them, not the package owner (hutkoSDK).
+          user: hutko_developer
 
       - name: Push to NuGet.org
         run: >
